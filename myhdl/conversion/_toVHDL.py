@@ -400,6 +400,8 @@ constwires = []
 
 def _writeSigDecls(f, intf, siglist, memlist):
     del constwires[:]
+    siglist.sort(key=lambda x:x._name.lower())
+    memlist.sort(key=lambda x:x.name.lower())
     for s in siglist:
         if not s._used:
             continue
@@ -1637,6 +1639,7 @@ class _ConvertAlwaysVisitor(_ConvertVisitor):
         if singleEdge:
             self.write(senslist[0].sig)
         else:
+            senslist.sort(key=lambda x:x.lower())
             for e in senslist[:-1]:
                 self.write(e)
                 self.write(', ')
@@ -1712,6 +1715,7 @@ class _ConvertAlwaysCombVisitor(_ConvertVisitor):
         self.writeDoc(node)
         senslist = compressSensitivityList(self.tree.senslist)
         self.write("%s: process (" % self.tree.name)
+        senslist.sort(key=lambda x:x.lower())
         for e in senslist[:-1]:
             self.write(e)
             self.write(', ')
@@ -1768,6 +1772,7 @@ class _ConvertAlwaysDecoVisitor(_ConvertVisitor):
         if singleEdge:
             self.write(senslist[0].sig)
         else:
+            senslist.sort(key=lambda x:x.lower())
             for e in senslist[:-1]:
                 self.write(e)
                 self.write(', ')
