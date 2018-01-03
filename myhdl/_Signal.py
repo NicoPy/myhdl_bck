@@ -124,7 +124,7 @@ class _Signal(object):
                  '_setNextVal', '_copyVal2Next', '_printVcd',
                  '_driven', '_read', '_name', '_used', '_inList',
                  '_waiter', 'toVHDL', 'toVerilog', '_slicesigs',
-                 '_numeric'
+                 '_numeric', '_not_used'
                  )
 
     def __init__(self, val=None):
@@ -175,6 +175,7 @@ class _Signal(object):
         self._code = ""
         self._slicesigs = []
         self._tracing = 0
+        self._not_used = False
         _signals.append(self)
 
     def _clear(self):
@@ -229,10 +230,11 @@ class _Signal(object):
 
     @next.setter
     def next(self, val):
-        if isinstance(val, _Signal):
-            val = val._val
-        self._setNextVal(val)
-        _siglist.append(self)
+        if not self._not_used :
+            if isinstance(val, _Signal):
+                val = val._val
+            self._setNextVal(val)
+            _siglist.append(self)
 
     # support for the 'posedge' attribute
     @property

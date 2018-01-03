@@ -409,9 +409,13 @@ def _writeSigDecls(f, intf, siglist, memlist):
         p = _getTypeString(s)
         if s._driven:
             if not s._read and not isinstance(s, _TristateDriver):
-                warnings.warn("%s: %s" % (_error.UnreadSignal, s._name),
-                              category=ToVHDLWarning
-                              )
+                if s._not_used :
+                    #continue
+                    print("-- NOT USED : ", end="", file=f)
+                else :
+                    warnings.warn("%s: %s" % (_error.UnreadSignal, s._name),
+                                  category=ToVHDLWarning
+                                  )
             # the following line implements initial value assignments
 
             sig_vhdl_obj = inferVhdlObj(s)
@@ -927,6 +931,10 @@ class _ConvertVisitor(ast.NodeVisitor, _ConversionMixin):
     def visit_Assign(self, node):
         lhs = node.targets[0]
         rhs = node.value
+        if isinstance(lhs.obj, _Signal):
+            if lhs.obj._not_used :
+                #return 
+                self.write('-- NOT USED : ')
         # shortcut for expansion of ROM in case statement
         if isinstance(node.value, ast.Subscript) and \
                 isinstance(node.value.slice, ast.Index) and \

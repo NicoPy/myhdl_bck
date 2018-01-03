@@ -43,6 +43,7 @@ from myhdl.conversion._misc import (_error, _access, _kind,
                                     _get_argnames)
 from myhdl._extractHierarchy import _isMem, _getMemInfo, _UserCode
 from myhdl._Signal import _Signal, _WaiterList
+from myhdl._NotUsed import NotUsed
 from myhdl._ShadowSignal import _ShadowSignal, _SliceSignal, _TristateDriver
 from myhdl._util import _flatten
 from myhdl._util import _isTupleOfInts
@@ -104,7 +105,8 @@ def _analyzeSigs(hierarchy, hdl='Verilog'):
                 continue
             s._name = _makeName(n, prefixes, namedict)
             if not s._nrbits:
-                raise ConversionError(_error.UndefinedBitWidth, s._name)
+                if not s._not_used :
+                    raise ConversionError(_error.UndefinedBitWidth, s._name)
             # slice signals
             for sl in s._slicesigs:
                 sl._setName(hdl)
