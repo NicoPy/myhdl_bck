@@ -205,8 +205,8 @@ def _writeVcdSigs(f, hierarchy, tracelists):
         print("$scope module %s $end" % name, file=f)
         for n, s in sigdict.items():
             sval = _getSval(s)
-            if sval is None:
-                raise ValueError("%s of module %s has no initial value" % (n, name))
+#            if sval is None:
+#                raise ValueError("%s of module %s has no initial value" % (n, name))
             if not s._tracing:
                 s._tracing = 1
                 s._code = next(namegen)
