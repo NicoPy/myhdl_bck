@@ -58,6 +58,7 @@ from myhdl._ShadowSignal import _TristateSignal, _TristateDriver
 
 from myhdl._block import _Block
 from myhdl._getHierarchy import _getHierarchy
+from myhdl._Attribute import get_Attributes
 
 _version = myhdl.__version__.replace('.', '')
 _shortversion = _version.replace('dev', '')
@@ -241,6 +242,7 @@ class _ToVHDLConvertor(object):
         _writeTypeDefs(vfile)
         _writeSigDecls(vfile, intf, siglist, memlist)
         _writeCompDecls(vfile, compDecls)
+        _writeAttributeDecls(vfile, intf, siglist, memlist)
         _convertGens(genlist, siglist, memlist, vfile)
         _writeModuleFooter(vfile, arch)
 
@@ -398,6 +400,36 @@ def _writeTypeDefs(f):
 constwires = []
 
 
+def _writeAttributeDecls(f, intf, siglist, memlist):
+    
+    def get_obj_name(obj):
+        try :
+            return obj._name
+        except AttributeError :
+            pass
+        
+        for e in memlist :
+            if e.mem is obj :
+                return e.name
+        
+    attr_decl_list = []
+    attr_spec_list = []
+    
+    for attr in get_Attributes() :
+        attr_decl_list.append(str(attr))
+        attr_spec_list.extend(attr.get_spec_list(get_obj_name))
+
+    if attr_decl_list :
+        attr_decl_list.sort()
+        print(end="\n", file=f)
+        for attr_decl in attr_decl_list :
+            print(attr_decl, end="\n", file=f)
+        print(end="\n", file=f)
+        attr_spec_list.sort()
+        for attr_spec in attr_spec_list :
+            print(attr_spec, end="\n", file=f)
+        print(end="\n", file=f)
+
 def _writeSigDecls(f, intf, siglist, memlist):
     del constwires[:]
     siglist.sort(key=lambda x:x._name.lower())
@@ -405,7 +437,7 @@ def _writeSigDecls(f, intf, siglist, memlist):
     for s in siglist:
         if not s._used:
             continue
-        if s._name in intf.argnames:
+        if s._name in intf.argnames:    # Remove port signals
             continue
         r = _getRangeString(s)
         p = _getTypeString(s)
